@@ -1,6 +1,6 @@
 {
   "name": "@jsdevlab/valibot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": false,
   "description": "Generate deterministic initialization data and seedable mock data from valibot schemas, with end-to-end type inference.",
   "keywords": [
