@@ -4,15 +4,19 @@ export default defineConfig({
   lib: [
     {
       format: 'esm',
-      dts: { bundle: true },
+      syntax: 'es2022',
+      dts: { bundle: true, autoExtension: true },
     },
     {
       format: 'cjs',
-      dts: { bundle: true },
+      syntax: 'es2022',
+      dts: { bundle: true, autoExtension: true },
     },
   ],
+  // `web` keeps the output portable for both browsers and Node.js 20+.
+  // The library uses only universal globals (Blob, File, btoa, Promise).
   output: {
-    target: 'node',
+    target: 'web',
   },
   source: {
     entry: {

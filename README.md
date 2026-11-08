@@ -15,12 +15,13 @@ Generate **deterministic initialization data** and **seedable mock data** from [
 - **Type-safe** — the return type is `v.InferOutput<T>`; `defaults` is checked as `DeepPartial<v.InferOutput<T>>`.
 - **Extensible** — register custom generators by schema instance or schema type; they take precedence over built-ins.
 - **Non-invasive** — uses a private faker instance, so your application's global faker seed and random state are untouched.
+- **Universal** — runs in Node.js and modern browsers; the browser build is tested in real Chromium with Rstest Browser Mode.
 - **Dual format** — ships ESM and CommonJS builds with TypeScript declarations.
 
 ## Requirements
 
-- Node.js **20 or later** (the library uses the global `Blob`, `File` and `btoa`).
-- Modern browsers with the same globals also work.
+- Node.js `^20.19.0 || >=22.12.0` (the library uses the global `Blob`, `File` and `btoa`).
+- Modern ES2022 browsers (Chrome/Edge 94+, Firefox 93+, Safari 15.4+) with the same globals. No runtime polyfills are injected.
 - Peer dependency: `valibot ^1.5.0`.
 
 ## Installation
@@ -327,15 +328,22 @@ create(schema, { defaults: { age: 'old' } });
 
 ```bash
 pnpm install
-pnpm build        # rslib: ESM + CJS + declarations
-pnpm test         # type-level tests + unit tests
-pnpm test:types   # tsc --noEmit -p tsconfig.typetests.json
-pnpm test:watch   # rstest --watch
-pnpm coverage     # coverage report + thresholds
-pnpm check        # biome check (CI mode)
-pnpm check:fix    # biome check --write
-pnpm format       # biome format --write
+pnpm build          # rslib: ESM + CJS + .d.ts/.d.cts
+pnpm test           # type-level tests + Node.js unit tests
+pnpm test:types     # tsc --noEmit -p tsconfig.typetests.json
+pnpm test:watch     # rstest --watch
+pnpm coverage       # coverage report + thresholds
+pnpm exec playwright install chromium
+pnpm test:browser   # real-browser smoke tests (Rstest Browser Mode)
+pnpm test:all       # Node.js tests + browser tests
+# No Playwright download? Set PLAYWRIGHT_CHANNEL=msedge (or chrome)
+# to reuse an installed browser.
+pnpm check          # biome check (CI mode)
+pnpm check:fix      # biome check --write
+pnpm format         # biome format --write
 ```
+
+The build targets `web` with ES2022 syntax, so the same output runs in browsers and Node.js. Source code must stay free of Node.js-only APIs; the `src/__tests__/browser.test.ts` suite runs in both Node.js and Chromium to catch regressions.
 
 Coverage thresholds: statements 85%, lines 85%, functions 90%, branches 75%.
 

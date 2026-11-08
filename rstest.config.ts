@@ -3,6 +3,8 @@ import { defineConfig } from '@rstest/core';
 
 export default defineConfig({
   extends: withRslibConfig(),
+  include: ['src/**/*.test.ts'],
+  testEnvironment: 'node',
   coverage: {
     provider: 'v8',
     include: ['src/**/*.{ts,tsx}'],

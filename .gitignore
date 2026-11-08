@@ -49,8 +49,9 @@ web_modules/
 # TypeScript cache
 *.tsbuildinfo
 
-# Rslib cache
+# Rslib / Rstack cache
 .rslib/
+.rstack/
 
 # Optional npm cache directory
 .npm

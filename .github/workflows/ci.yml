@@ -38,5 +38,11 @@ jobs:
       - name: Check coverage thresholds
         run: pnpm coverage
 
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run browser tests
+        run: pnpm test:browser
+
       - name: Build
         run: pnpm build

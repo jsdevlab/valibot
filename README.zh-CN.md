@@ -15,12 +15,13 @@
 - **类型安全**：返回类型为 `v.InferOutput<T>`；`defaults` 按 `DeepPartial<v.InferOutput<T>>` 做编译期校验。
 - **可扩展**：可按 schema 实例或 `schema.type` 注册自定义生成器，优先级高于内置生成器。
 - **无侵入**：使用私有的 faker 实例，不会改变应用全局 faker 的 seed 与随机状态。
+- **跨环境**：同时支持 Node.js 与现代浏览器；浏览器构建通过 Rstest Browser Mode 在真实 Chromium 中测试。
 - **双格式**：同时提供 ESM 与 CommonJS 构建产物及 TypeScript 声明。
 
 ## 环境要求
 
-- Node.js **20 及以上**（使用了全局 `Blob`、`File` 与 `btoa`）。
-- 提供相同全局对象的现代浏览器同样可用。
+- Node.js `^20.19.0 || >=22.12.0`（使用了全局 `Blob`、`File` 与 `btoa`）。
+- 支持 ES2022 的现代浏览器（Chrome/Edge 94+、Firefox 93+、Safari 15.4+），并提供相同全局对象。不会注入运行时 polyfill。
 - Peer 依赖：`valibot ^1.5.0`。
 
 ## 安装
@@ -327,15 +328,22 @@ create(schema, { defaults: { age: 'old' } });
 
 ```bash
 pnpm install
-pnpm build        # rslib：ESM + CJS + 类型声明
-pnpm test         # 类型级测试 + 单元测试
-pnpm test:types   # tsc --noEmit -p tsconfig.typetests.json
-pnpm test:watch   # rstest --watch
-pnpm coverage     # 覆盖率报告与阈值检查
-pnpm check        # biome check（CI 模式）
-pnpm check:fix    # biome check --write
-pnpm format       # biome format --write
+pnpm build          # rslib：ESM + CJS + .d.ts/.d.cts
+pnpm test           # 类型级测试 + Node.js 单元测试
+pnpm test:types     # tsc --noEmit -p tsconfig.typetests.json
+pnpm test:watch     # rstest --watch
+pnpm coverage       # 覆盖率报告与阈值检查
+pnpm exec playwright install chromium
+pnpm test:browser   # 真实浏览器冒烟测试（Rstest Browser Mode）
+pnpm test:all       # Node.js 测试 + 浏览器测试
+# 无法下载 Playwright 浏览器时，设置 PLAYWRIGHT_CHANNEL=msedge（或 chrome）
+# 以复用本机已安装的浏览器。
+pnpm check          # biome check（CI 模式）
+pnpm check:fix      # biome check --write
+pnpm format         # biome format --write
 ```
+
+构建目标为 `web`、语法为 ES2022，因此同一份产物可运行于浏览器与 Node.js。源码不得使用 Node.js 专有 API；`src/__tests__/browser.test.ts` 会同时在 Node.js 与 Chromium 中运行以捕获回归。
 
 覆盖率阈值：statements 85%、lines 85%、functions 90%、branches 75%。
 
